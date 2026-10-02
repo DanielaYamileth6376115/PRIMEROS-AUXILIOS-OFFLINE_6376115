@@ -1,0 +1,6 @@
+{
+  "name": "AuxilioApp - Primeros Auxilios Offline",
+  "description": "Guías paso a paso de primeros auxilios sin conexión a internet, llamadas rápidas a emergencias locales y modo asistido por voz para el hogar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
