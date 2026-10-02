@@ -10,6 +10,7 @@ import { GuideCatalog } from './components/GuideCatalog';
 import { GuideStepViewer } from './components/GuideStepViewer';
 import { PanicModeView } from './components/PanicModeView';
 import { EmergencyModal } from './components/EmergencyModal';
+import { TriageModal } from './components/TriageModal';
 import { EMERGENCY_GUIDES } from './data/emergencyGuides';
 import { COUNTRY_PRESETS } from './data/emergencyContacts';
 import {
@@ -20,7 +21,7 @@ import {
   importarJSON,
 } from './utils/storage';
 import { UrgencyLevel, EmergencyContact, AuxilioAppState } from './types';
-import { HeartHandshake, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { HeartHandshake, ShieldCheck, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 export default function App() {
   // Estado maestro persistido en localStorage
@@ -33,6 +34,7 @@ export default function App() {
 
   // Modales y Modos especiales
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState<boolean>(false);
+  const [isTriageModalOpen, setIsTriageModalOpen] = useState<boolean>(false);
   const [isPanicMode, setIsPanicMode] = useState<boolean>(false);
 
   // Retroalimentación humana: Notificación flotante temporal
@@ -228,6 +230,38 @@ export default function App() {
               onUrgencyChange={setSelectedUrgency}
             />
 
+            {/* Asistente de Triage Inteligente (Sello de IA + Failover Offline) */}
+            <div className="p-4 bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 text-white rounded-3xl border-2 border-stone-800 shadow-md flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center shrink-0 shadow-sm">
+                  <Sparkles className="w-6 h-6 fill-current" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-black uppercase text-amber-400 tracking-wider">
+                      Evaluación Inteligente
+                    </span>
+                    <span className="text-[10px] font-bold bg-white/20 text-white px-1.5 py-0.5 rounded">
+                      Gemini + Offline
+                    </span>
+                  </div>
+                  <p className="text-sm font-black text-white mt-0.5">
+                    ¿No sabés qué emergencia es?
+                  </p>
+                  <p className="text-xs text-stone-300">
+                    Describí lo que pasa y la IA determinará la gravedad y guía.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsTriageModalOpen(true)}
+                className="shrink-0 min-h-[48px] px-4 py-2.5 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-stone-950 text-xs font-black rounded-xl shadow-md transition-transform active:scale-95 flex items-center gap-1.5"
+              >
+                <span>Hacer Triage</span>
+              </button>
+            </div>
+
             {/* Acceso Rápido a Emergencias Más Frecuentes (Zonas táctiles masivas) */}
             {!searchQuery && selectedUrgency === 'todas' && (
               <div className="space-y-2">
@@ -323,6 +357,16 @@ export default function App() {
         onExportBackup={handleExportBackup}
         onImportBackup={handleImportBackup}
         onResetDefaults={handleResetDefaults}
+      />
+
+      {/* Modal de Triage y Clasificación con Inteligencia Artificial */}
+      <TriageModal
+        isOpen={isTriageModalOpen}
+        onClose={() => setIsTriageModalOpen(false)}
+        currentCountry={currentCountry}
+        onOpenGuide={(guideId) => {
+          setActiveGuideId(guideId);
+        }}
       />
     </div>
   );

@@ -45,3 +45,19 @@ La aplicación utiliza la API nativa `localStorage` del navegador para persistir
 | **QA-STRESS-03** | Inyección de texto masivo (+600 caracteres) | Pegar un texto de 800 caracteres en la nota del botiquín o en el nombre del contacto. | La interfaz trunca o restringe la entrada a los límites seguros (`maxLength`), aplica `break-words` y no desborda la pantalla ni rompe el layout en 320 px. | **PASA** |
 | **QA-STRESS-04** | Multitouch / Doble clic rápido en "Llamar" o "Reproducir Audio" | Tocar repetidas veces (5 toques por segundo) sobre el botón de lectura por voz o el metrónomo de RCP. | El sistema cancela locuciones pendientes (`speechSynthesis.cancel()`), previene solapamiento de audio o bloqueos en la cola del sintetizador y no genera llamadas duplicadas. | **PASA** |
 | **QA-STRESS-05** | Carga de archivo de respaldo corrupto o malicioso | Intentar importar un archivo `.json` con sintaxis rota, vacío o con scripts inyectados (`<script>alert(1)</script>`). | `importarJSON()` captura el error en el bloque `try/catch`, descarta los datos maliciosos, mantiene el estado local intacto y muestra un mensaje amigable: *"El archivo no corresponde a un respaldo válido"*. | **PASA** |
+
+---
+
+## Integración de IA: Triage y Clasificación de Riesgo (Google Gemini)
+
+AuxilioApp incorpora un **Asistente de Triage Inteligente** impulsado por Google Gemini (`gemini-2.5-flash`), diseñado específicamente para clasificar la gravedad prehospitalaria según los síntomas descritos por el usuario en lenguaje natural.
+
+### Resiliencia ante Pérdida de Conexión (Failover Offline)
+
+En una situación de riesgo vital, el usuario no puede depender exclusivamente de la cobertura de datos móviles o de la latencia de un servidor en la nube. Por ello, la arquitectura de AuxilioApp implementa una estrategia de **failover dual**:
+
+1. **Detección Automática de Conectividad (`navigator.onLine`):** Si el teléfono se encuentra en modo avión, sin saldo o en zona rural sin señal, el servicio no intenta peticiones de red inútiles y conmuta instantáneamente al motor de evaluación local.
+2. **Timeout Preventivo Estricto (4.5 segundos):** Si la red es inestable o la API de Gemini sufre demoras, la promesa se cancela mediante `Promise.race()` para no congelar la pantalla.
+3. **Motor Local por Reglas Clínicas de Decisión (Fallback Offline):** Analiza términos y semántica de emergencia (ej. *"ahogo"*, *"no respira"*, *"pecho"*, *"fuego"*, *"sangre"*, *"veneno"*) y genera exactamente la misma estructura JSON estandarizada con un mensaje honesto: `Evaluación local activa (Sin conexión a la IA)`.
+4. **Vínculo Directo a Guías 100% Offline:** Tanto en modo IA como en modo local, el triage identifica la guía paso a paso adecuada y ofrece un botón de un solo toque para iniciar el protocolo sin requerir conexión.
+
