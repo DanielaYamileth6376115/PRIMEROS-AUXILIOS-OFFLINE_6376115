@@ -33,3 +33,15 @@ La aplicación utiliza la API nativa `localStorage` del navegador para persistir
 
 5. **Límite de Capacidad:**
    - `localStorage` ofrece aproximadamente 5MB de cuota por origen. AuxilioApp consume menos de 15KB para todas sus notas y contactos, por lo que nunca saturará el almacenamiento del usuario; sin embargo, no está diseñado para adjuntar archivos binarios pesados (como videos o fotos en alta resolución).
+
+---
+
+## Tabla de Control de Calidad y Pruebas de Estrés (QA)
+
+| ID Caso de Prueba | Escenario / Intento de Rotura | Entrada / Acción del Tester | Resultado Esperado | Estado |
+| :--- | :--- | :--- | :--- | :---: |
+| **QA-STRESS-01** | Envío de formulario con campos vacíos o solo espacios | Abrir formulario de contacto, presionar barra espaciadora en "Nombre" y pulsar "Guardar". | El sistema bloquea el guardado, resalta el campo con borde de alerta y muestra: *"El nombre debe tener al menos 2 caracteres válidos."* | **PASA** |
+| **QA-STRESS-02** | Entrada de texto alfabético o símbolos en campo de teléfono | Escribir `"ambulancia-roja#?"` en el campo telefónico y pulsar "Guardar". | Se rechaza la entrada, impidiendo números inválidos que rompan el marcado telefónico `tel:`, mostrando: *"Ingresa un número telefónico válido (solo dígitos o +)"*. | **PASA** |
+| **QA-STRESS-03** | Inyección de texto masivo (+600 caracteres) | Pegar un texto de 800 caracteres en la nota del botiquín o en el nombre del contacto. | La interfaz trunca o restringe la entrada a los límites seguros (`maxLength`), aplica `break-words` y no desborda la pantalla ni rompe el layout en 320 px. | **PASA** |
+| **QA-STRESS-04** | Multitouch / Doble clic rápido en "Llamar" o "Reproducir Audio" | Tocar repetidas veces (5 toques por segundo) sobre el botón de lectura por voz o el metrónomo de RCP. | El sistema cancela locuciones pendientes (`speechSynthesis.cancel()`), previene solapamiento de audio o bloqueos en la cola del sintetizador y no genera llamadas duplicadas. | **PASA** |
+| **QA-STRESS-05** | Carga de archivo de respaldo corrupto o malicioso | Intentar importar un archivo `.json` con sintaxis rota, vacío o con scripts inyectados (`<script>alert(1)</script>`). | `importarJSON()` captura el error en el bloque `try/catch`, descarta los datos maliciosos, mantiene el estado local intacto y muestra un mensaje amigable: *"El archivo no corresponde a un respaldo válido"*. | **PASA** |
