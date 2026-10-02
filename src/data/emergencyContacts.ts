@@ -83,6 +83,18 @@ export const COUNTRY_PRESETS: CountryPreset[] = [
     ],
   },
   {
+    id: 'sv',
+    name: 'El Salvador',
+    flag: '🇸🇻',
+    defaultEmergencyNumber: '132',
+    contacts: [
+      { id: 'sv-sem', name: 'SEM (Emergencias Médicas / Ambulancia)', number: '132', type: 'ambulancia', description: 'Sistema de Emergencias Médicas nacional' },
+      { id: 'sv-pnc', name: 'PNC (Policía Nacional Civil)', number: '911', type: 'policia', description: 'Atención a emergencias policiales' },
+      { id: 'sv-bomberos', name: 'Cuerpo de Bomberos', number: '913', type: 'bomberos', description: 'Rescates e incendios a nivel nacional' },
+      { id: 'sv-cruzroja', name: 'Cruz Roja Salvadoreña', number: '22810125', type: 'ambulancia', description: 'Central de socorro y traslados (2281-0125)' },
+    ],
+  },
+  {
     id: 'intl',
     name: 'Internacional / Universal',
     flag: '🌐',

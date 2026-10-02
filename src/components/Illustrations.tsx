@@ -239,6 +239,66 @@ export const Illustration: React.FC<IllustrationProps> = ({ type, isPanicMode = 
         </svg>
       );
 
+    case 'heart_attack':
+      return (
+        <svg viewBox="0 0 320 200" className="w-full h-44 sm:h-52 select-none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="200" rx="12" fill={isPanicMode ? '#1c1917' : '#fafaf9'} />
+          {/* Persona en postura semisentada (45 grados) apoyada contra pared */}
+          <path d="M 80 155 L 240 155" stroke={strokeColor} strokeWidth="5" strokeLinecap="round" />
+          <path d="M 120 155 L 145 95" stroke={strokeColor} strokeWidth="7" strokeLinecap="round" />
+          <circle cx="150" cy="70" r="16" fill={bodyFill} stroke={strokeColor} strokeWidth="4" />
+          {/* Mano sobre el pecho con irradiación */}
+          <circle cx="140" cy="105" r="12" fill={highlightFill} stroke={accentColor} strokeWidth="3" />
+          {/* Líneas de dolor irradiado hacia brazo izquierdo y cuello */}
+          <path d="M 135 100 Q 115 105 105 125" stroke={accentColor} strokeWidth="4" strokeDasharray="3 3" strokeLinecap="round" />
+          <path d="M 145 95 L 148 78" stroke={accentColor} strokeWidth="3" strokeDasharray="2 2" strokeLinecap="round" />
+          <text x="160" y="185" textAnchor="middle" fill={isPanicMode ? '#fef08a' : '#78716c'} fontSize="12" fontWeight="700">
+            POSICIÓN SEMISENTADA (45°) • REPOSO ABSOLUTO • LLAMAR YA
+          </text>
+        </svg>
+      );
+
+    case 'venom_bite':
+      return (
+        <svg viewBox="0 0 320 200" className="w-full h-44 sm:h-52 select-none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="200" rx="12" fill={isPanicMode ? '#1c1917' : '#fafaf9'} />
+          {/* Extremidad con marcas de mordedura/picadura */}
+          <path d="M 60 130 L 260 130" stroke={strokeColor} strokeWidth="12" strokeLinecap="round" />
+          {/* Dos puntos de colmillo / aguijón */}
+          <circle cx="145" cy="126" r="4" fill={accentColor} />
+          <circle cx="165" cy="126" r="4" fill={accentColor} />
+          {/* Símbolo de NO succionar / NO cortar */}
+          <g transform="translate(190, 40)">
+            <circle cx="18" cy="18" r="18" stroke={accentColor} strokeWidth="3" fill="none" />
+            <line x1="5" y1="5" x2="31" y2="31" stroke={accentColor} strokeWidth="3" />
+            <text x="18" y="22" textAnchor="middle" fill={accentColor} fontSize="9" fontWeight="bold">NO CORTAR</text>
+          </g>
+          {/* Inmovilización / Reposo */}
+          <rect x="110" y="115" width="90" height="30" rx="6" stroke={accentColor} strokeWidth="2" strokeDasharray="4 3" fill="none" />
+          <text x="160" y="185" textAnchor="middle" fill={isPanicMode ? '#fef08a' : '#78716c'} fontSize="12" fontWeight="700">
+            LAVAR CON AGUA Y JABÓN • INMOVILIZAR • NO SUCCIONAR VENENO
+          </text>
+        </svg>
+      );
+
+    case 'bone_fracture':
+      return (
+        <svg viewBox="0 0 320 200" className="w-full h-44 sm:h-52 select-none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="200" rx="12" fill={isPanicMode ? '#1c1917' : '#fafaf9'} />
+          {/* Extremidad con ruptura / hueso expuesto */}
+          <path d="M 50 140 L 130 140" stroke={strokeColor} strokeWidth="14" strokeLinecap="round" />
+          <path d="M 180 140 L 270 140" stroke={strokeColor} strokeWidth="14" strokeLinecap="round" />
+          {/* Hueso desalineado que asoma */}
+          <path d="M 125 140 L 160 115" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
+          <path d="M 175 140 L 155 120" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
+          {/* Gasa estéril o paño limpio cubriendo sin empujar */}
+          <rect x="130" y="100" width="50" height="30" rx="4" fill={highlightFill} stroke={accentColor} strokeWidth="2" strokeDasharray="3 3" />
+          <text x="160" y="185" textAnchor="middle" fill={isPanicMode ? '#fef08a' : '#78716c'} fontSize="12" fontWeight="700">
+            CUBRIR CON GASA LIMPIA • NUNCA RECOLOCAR EL HUESO NI EMPUJAR
+          </text>
+        </svg>
+      );
+
     default:
       return (
         <svg viewBox="0 0 320 200" className="w-full h-44 sm:h-52 select-none" fill="none" xmlns="http://www.w3.org/2000/svg">

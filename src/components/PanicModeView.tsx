@@ -40,10 +40,16 @@ export const PanicModeView: React.FC<PanicModeViewProps> = ({
 
   const [autoSpeakOnStepChange, setAutoSpeakOnStepChange] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [ttsNotice, setTtsNotice] = useState<string | null>(null);
 
   // Reproducir voz al cambiar de paso si el usuario tiene autoSpeak activado
   useEffect(() => {
-    if (autoSpeakOnStepChange && isSpeechSynthesisSupported()) {
+    if (!isSpeechSynthesisSupported()) {
+      setTtsNotice('Audio no disponible en este dispositivo. Guíate con el texto gigante.');
+      return;
+    }
+
+    if (autoSpeakOnStepChange) {
       handleSpeakStep();
     }
     return () => {
@@ -52,8 +58,14 @@ export const PanicModeView: React.FC<PanicModeViewProps> = ({
   }, [stepIndex, variantIndex]);
 
   const handleSpeakStep = () => {
+    if (!isSpeechSynthesisSupported()) {
+      setTtsNotice('Tu navegador no soporta lectura por voz.');
+      return;
+    }
+
     stopSpeaking();
     setIsSpeaking(true);
+    setTtsNotice(null);
     const text = `${currentStep.title}. ${currentStep.instruction}. ${
       currentStep.vitalAdvice ? 'Atención: ' + currentStep.vitalAdvice : ''
     }`;
@@ -62,7 +74,10 @@ export const PanicModeView: React.FC<PanicModeViewProps> = ({
       rate: 0.9,
       onStart: () => setIsSpeaking(true),
       onEnd: () => setIsSpeaking(false),
-      onError: () => setIsSpeaking(false),
+      onError: () => {
+        setIsSpeaking(false);
+        setTtsNotice('Lectura pausada o altavoz silenciado.');
+      },
     });
   };
 
@@ -127,6 +142,19 @@ export const PanicModeView: React.FC<PanicModeViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Aviso de contingencia si el audio no está disponible */}
+      {ttsNotice && (
+        <div className="mt-2 py-2 px-3 bg-amber-400/20 border border-amber-400/50 rounded-xl text-amber-300 text-xs font-semibold flex items-center justify-between gap-2 max-w-2xl mx-auto w-full">
+          <span>⚠️ {ttsNotice}</span>
+          <button
+            onClick={() => setTtsNotice(null)}
+            className="text-[11px] font-bold text-amber-400 underline shrink-0"
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
 
       {/* Contenido principal en letras masivas */}
       <div className="py-4 space-y-4 max-w-2xl mx-auto w-full my-auto">

@@ -54,6 +54,7 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [continuousReading, setContinuousReading] = useState(false);
   const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<number | null>(null);
+  const [ttsError, setTtsError] = useState<string | null>(null);
 
   // Estados de Metrónomo RCP
   const [isMetronomeActive, setIsMetronomeActive] = useState(false);
@@ -101,9 +102,10 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
    */
   const handleSpeakCurrentStep = (continuous: boolean = false) => {
     if (!isSpeechSynthesisSupported()) {
-      alert('Tu navegador no soporta síntesis de voz offline.');
+      setTtsError('Tu navegador no cuenta con soporte para lectura en voz alta. Puedes guiarte con las instrucciones y diagramas en pantalla.');
       return;
     }
+    setTtsError(null);
 
     if (advanceTimerRef.current) {
       window.clearTimeout(advanceTimerRef.current);
@@ -120,7 +122,10 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
 
     speakText(textToSpeak, {
       rate: 0.95,
-      onStart: () => setIsSpeaking(true),
+      onStart: () => {
+        setIsSpeaking(true);
+        setTtsError(null);
+      },
       onEnd: () => {
         setIsSpeaking(false);
         if (continuous) {
@@ -156,6 +161,7 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
       onError: () => {
         setIsSpeaking(false);
         setContinuousReading(false);
+        setTtsError('La locución fue interrumpida o el altavoz está en silencio. Continúa con la guía visual.');
       },
     });
   };
@@ -198,6 +204,7 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
       onError: () => {
         setIsSpeaking(false);
         setContinuousReading(false);
+        setTtsError('La locución automática fue interrumpida. Puedes seguir con la lectura visual.');
       },
     });
   };
@@ -320,6 +327,22 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
           </div>
         )}
       </div>
+
+      {/* Notificación visual de contingencia / Fallback si falla Text-To-Speech */}
+      {ttsError && (
+        <div className="p-3 bg-amber-50 border border-amber-300 rounded-2xl flex items-center justify-between gap-2.5 text-xs text-amber-900 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <VolumeX className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="font-medium">{ttsError}</span>
+          </div>
+          <button
+            onClick={() => setTtsError(null)}
+            className="text-xs font-bold text-amber-800 hover:text-amber-950 px-2 py-1 rounded-lg bg-amber-200/60 hover:bg-amber-200 shrink-0"
+          >
+            Entendido
+          </button>
+        </div>
+      )}
 
       {/* Controles de Asistencia por Voz y Metrónomo (Offline) */}
       <div className="bg-stone-900 text-white p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-2.5 shadow-md">

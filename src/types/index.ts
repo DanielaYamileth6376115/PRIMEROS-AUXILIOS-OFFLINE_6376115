@@ -11,7 +11,7 @@ export interface GuideStep {
   instruction: string;
   vitalAdvice?: string; // Consejo de vida o muerte (ej. "NO dar golpes en la espalda si la persona tose con fuerza")
   audioText: string;    // Frase concisa y clara optimizada para el sintetizador de voz
-  illustrationType: 'heimlich_adult' | 'heimlich_baby' | 'cpr_chest' | 'cpr_baby' | 'burn_cooling' | 'wound_pressure' | 'recovery_position' | 'seizure_safe' | 'general';
+  illustrationType: 'heimlich_adult' | 'heimlich_baby' | 'cpr_chest' | 'cpr_baby' | 'burn_cooling' | 'wound_pressure' | 'recovery_position' | 'seizure_safe' | 'heart_attack' | 'venom_bite' | 'bone_fracture' | 'general';
   warningWhatNotToDo?: string;
   durationSeconds?: number;
 }

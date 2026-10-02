@@ -25,7 +25,44 @@ let voicesLoaded = false;
 
 // Verifica compatibilidad en el dispositivo del usuario
 export function isSpeechSynthesisSupported(): boolean {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  try {
+    return (
+      typeof window !== 'undefined' &&
+      'speechSynthesis' in window &&
+      'SpeechSynthesisUtterance' in window &&
+      Boolean(window.speechSynthesis)
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Diagnóstico completo del estado de síntesis de voz en el navegador.
+ * Evita fallos silenciosos y permite mostrar advertencias preventivas.
+ */
+export function getTTSDiagnostics(): {
+  isSupported: boolean;
+  voicesAvailable: boolean;
+  voiceName: string;
+  errorMessage?: string;
+} {
+  const supported = isSpeechSynthesisSupported();
+  if (!supported) {
+    return {
+      isSupported: false,
+      voicesAvailable: false,
+      voiceName: '',
+      errorMessage: 'Este navegador o dispositivo no cuenta con soporte nativo para lectura en voz alta (Web Speech API).',
+    };
+  }
+
+  const voices = window.speechSynthesis.getVoices();
+  return {
+    isSupported: true,
+    voicesAvailable: voices.length > 0,
+    voiceName: preferredSpanishVoice?.name || (voices.length > 0 ? voices[0].name : 'Voz estándar del sistema'),
+  };
 }
 
 /**
