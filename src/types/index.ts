@@ -52,3 +52,20 @@ export interface CountryPreset {
   defaultEmergencyNumber: string;
   contacts: EmergencyContact[];
 }
+
+export interface BotiquinItem {
+  id: string;
+  name: string;
+  location?: string;
+  notes?: string;
+}
+
+export interface AuxilioAppState {
+  version: number;
+  selectedCountryId: string;
+  customContacts: EmergencyContact[];
+  botiquinNotes: string;
+  botiquinItems: BotiquinItem[];
+  lastUpdated: string;
+}
+

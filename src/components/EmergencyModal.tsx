@@ -3,8 +3,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { X, Phone, Plus, Trash2, ShieldAlert, Check } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import {
+  X,
+  Phone,
+  Plus,
+  Trash2,
+  ShieldAlert,
+  Check,
+  Download,
+  Upload,
+  RotateCcw,
+  PackagePlus,
+  FileText,
+} from 'lucide-react';
 import { CountryPreset, EmergencyContact } from '../types';
 import { COUNTRY_PRESETS, formatTelUri } from '../data/emergencyContacts';
 
@@ -16,6 +28,11 @@ interface EmergencyModalProps {
   customContacts: EmergencyContact[];
   onAddCustomContact: (contact: EmergencyContact) => void;
   onDeleteCustomContact: (contactId: string) => void;
+  botiquinNotes: string;
+  onUpdateBotiquinNotes: (notes: string) => void;
+  onExportBackup: () => void;
+  onImportBackup: (file: File) => void;
+  onResetDefaults: () => void;
 }
 
 export const EmergencyModal: React.FC<EmergencyModalProps> = ({
@@ -26,13 +43,28 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
   customContacts,
   onAddCustomContact,
   onDeleteCustomContact,
+  botiquinNotes,
+  onUpdateBotiquinNotes,
+  onExportBackup,
+  onImportBackup,
+  onResetDefaults,
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [isEditingBotiquin, setIsEditingBotiquin] = useState(false);
+  const [tempBotiquinNotes, setTempBotiquinNotes] = useState(botiquinNotes);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!isOpen) return null;
+
+  const showFeedback = (msg: string) => {
+    setActionNotice(msg);
+    setTimeout(() => setActionNotice(null), 3500);
+  };
 
   const handleCreateContact = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +84,29 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
     setNewNumber('');
     setNewDescription('');
     setShowAddForm(false);
+    showFeedback('Contacto guardado localmente.');
+  };
+
+  const handleSaveBotiquin = () => {
+    onUpdateBotiquinNotes(tempBotiquinNotes);
+    setIsEditingBotiquin(false);
+    showFeedback('Notas de botiquín actualizadas.');
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onImportBackup(file);
+      showFeedback('Respaldo JSON importado exitosamente.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleConfirmReset = () => {
+    if (window.confirm('¿Deseas restablecer la app a los valores de fábrica? Se borrarán tus contactos locales y notas de botiquín.')) {
+      onResetDefaults();
+      showFeedback('Configuración restablecida a valores por defecto.');
+    }
   };
 
   return (
@@ -257,13 +312,119 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
               </div>
             )}
           </div>
+
+          {/* Notas de Ubicación del Botiquín del Hogar */}
+          <div className="p-3.5 bg-stone-100 rounded-2xl border border-stone-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+                <FileText className="w-4 h-4 text-stone-600" />
+                <span>Ubicación y Notas del Botiquín</span>
+              </div>
+              {!isEditingBotiquin ? (
+                <button
+                  onClick={() => {
+                    setTempBotiquinNotes(botiquinNotes);
+                    setIsEditingBotiquin(true);
+                  }}
+                  className="text-xs font-bold text-red-600 hover:text-red-700"
+                >
+                  Editar nota
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsEditingBotiquin(false)}
+                    className="text-xs text-stone-500 hover:text-stone-700"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSaveBotiquin}
+                    className="text-xs font-bold text-emerald-700 hover:text-emerald-800"
+                  >
+                    Guardar
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {isEditingBotiquin ? (
+              <textarea
+                value={tempBotiquinNotes}
+                onChange={(e) => setTempBotiquinNotes(e.target.value)}
+                placeholder="Ej. Botiquín en armario alto de la cocina. Llave en repisa lateral..."
+                rows={3}
+                className="w-full text-xs p-2.5 bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            ) : (
+              <p className="text-xs text-stone-600 leading-relaxed italic">
+                {botiquinNotes || 'No hay notas sobre el botiquín del hogar cargadas todavía.'}
+              </p>
+            )}
+          </div>
+
+          {/* Gestión de Respaldo y Persistencia Offline (.json) */}
+          <div className="pt-2 border-t border-stone-200 space-y-2">
+            <h3 className="text-xs font-bold text-stone-600 uppercase tracking-wider">
+              Persistencia y Respaldo (.json)
+            </h3>
+            <p className="text-[11px] text-stone-500">
+              Guarda tus contactos y notas en un archivo para no perderlos si cambias de celular o borras los datos del navegador.
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                onClick={onExportBackup}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-stone-900 hover:bg-black text-white text-xs font-bold transition-all active:scale-95"
+                title="Descargar copia de seguridad en formato JSON"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Exportar Respaldo</span>
+              </button>
+
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white border border-stone-300 text-stone-800 hover:bg-stone-100 text-xs font-bold transition-all active:scale-95 shadow-xs"
+                title="Cargar copia de seguridad previa"
+              >
+                <Upload className="w-3.5 h-3.5 text-stone-600" />
+                <span>Importar JSON</span>
+              </button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json,application/json"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={handleConfirmReset}
+                className="flex items-center gap-1 text-[11px] font-bold text-stone-400 hover:text-red-600 transition-colors p-1"
+                title="Borrar personalizaciones y volver a configuración de fábrica"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Restablecer valores de fábrica</span>
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* Notificación flotante de confirmación */}
+        {actionNotice && (
+          <div className="p-2.5 bg-emerald-600 text-white text-xs font-bold text-center animate-in slide-in-from-bottom duration-200">
+            ✓ {actionNotice}
+          </div>
+        )}
 
         {/* Pie con advertencia comunitaria */}
         <div className="p-3 bg-stone-100 border-t border-stone-200 flex items-center gap-2 text-stone-600 text-xs">
           <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
           <span>
-            Los datos se guardan en este dispositivo y están disponibles sin internet.
+            Los datos se guardan en el almacenamiento local del dispositivo (localStorage).
           </span>
         </div>
       </div>

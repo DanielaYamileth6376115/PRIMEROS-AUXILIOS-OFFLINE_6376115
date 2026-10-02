@@ -11,24 +11,20 @@ import { GuideStepViewer } from './components/GuideStepViewer';
 import { PanicModeView } from './components/PanicModeView';
 import { EmergencyModal } from './components/EmergencyModal';
 import { EMERGENCY_GUIDES } from './data/emergencyGuides';
+import { COUNTRY_PRESETS } from './data/emergencyContacts';
 import {
-  COUNTRY_PRESETS,
-  getSavedCountryId,
-  saveCountryId,
-  getSavedCustomContacts,
-  saveCustomContacts,
-} from './data/emergencyContacts';
-import { UrgencyLevel, EmergencyContact } from './types';
+  cargarDatos,
+  guardarDatos,
+  restablecerDatos,
+  exportarJSON,
+  importarJSON,
+} from './utils/storage';
+import { UrgencyLevel, EmergencyContact, AuxilioAppState } from './types';
 import { AlertTriangle, ShieldCheck, HeartHandshake } from 'lucide-react';
 
 export default function App() {
-  // País actual seleccionado para números de auxilio
-  const [selectedCountryId, setSelectedCountryId] = useState<string>(() => getSavedCountryId());
-  
-  // Contactos personalizados guardados localmente
-  const [customContacts, setCustomContacts] = useState<EmergencyContact[]>(() =>
-    getSavedCustomContacts()
-  );
+  // Estado maestro persistido en localStorage
+  const [appState, setAppState] = useState<AuxilioAppState>(() => cargarDatos());
 
   // Estados de navegación y catálogo
   const [activeGuideId, setActiveGuideId] = useState<string | null>(null);
@@ -41,30 +37,58 @@ export default function App() {
 
   // Guardar cambios de país en localStorage
   const handleSelectCountry = (countryId: string) => {
-    setSelectedCountryId(countryId);
-    saveCountryId(countryId);
+    const updated = guardarDatos({ selectedCountryId: countryId });
+    setAppState(updated);
   };
 
   // Manejo de contactos personalizados
   const handleAddCustomContact = (contact: EmergencyContact) => {
-    const updated = [contact, ...customContacts];
-    setCustomContacts(updated);
-    saveCustomContacts(updated);
+    const updatedContacts = [contact, ...appState.customContacts];
+    const updated = guardarDatos({ customContacts: updatedContacts });
+    setAppState(updated);
   };
 
   const handleDeleteCustomContact = (contactId: string) => {
-    const updated = customContacts.filter((c) => c.id !== contactId);
-    setCustomContacts(updated);
-    saveCustomContacts(updated);
+    const updatedContacts = appState.customContacts.filter((c) => c.id !== contactId);
+    const updated = guardarDatos({ customContacts: updatedContacts });
+    setAppState(updated);
+  };
+
+  // Manejo de notas del botiquín
+  const handleUpdateBotiquinNotes = (notes: string) => {
+    const updated = guardarDatos({ botiquinNotes: notes });
+    setAppState(updated);
+  };
+
+  // Restablecer a valores de fábrica
+  const handleResetDefaults = () => {
+    const resetState = restablecerDatos();
+    setAppState(resetState);
+  };
+
+  // Exportar copia de seguridad en JSON
+  const handleExportBackup = () => {
+    exportarJSON(appState);
+  };
+
+  // Importar copia de seguridad desde archivo JSON
+  const handleImportBackup = async (file: File) => {
+    try {
+      const imported = await importarJSON(file);
+      setAppState(imported);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al importar archivo');
+    }
   };
 
   // País seleccionado actual
   const currentCountry = useMemo(() => {
     return (
-      COUNTRY_PRESETS.find((c) => c.id === selectedCountryId) ||
+      COUNTRY_PRESETS.find((c) => c.id === appState.selectedCountryId) ||
+      COUNTRY_PRESETS.find((c) => c.id === 'sv') ||
       COUNTRY_PRESETS[0]
     );
-  }, [selectedCountryId]);
+  }, [appState.selectedCountryId]);
 
   // Guía activa (si el usuario abrió alguna)
   const activeGuide = useMemo(() => {
@@ -234,9 +258,14 @@ export default function App() {
         onClose={() => setIsEmergencyModalOpen(false)}
         currentCountry={currentCountry}
         onSelectCountry={handleSelectCountry}
-        customContacts={customContacts}
+        customContacts={appState.customContacts}
         onAddCustomContact={handleAddCustomContact}
         onDeleteCustomContact={handleDeleteCustomContact}
+        botiquinNotes={appState.botiquinNotes}
+        onUpdateBotiquinNotes={handleUpdateBotiquinNotes}
+        onExportBackup={handleExportBackup}
+        onImportBackup={handleImportBackup}
+        onResetDefaults={handleResetDefaults}
       />
     </div>
   );
