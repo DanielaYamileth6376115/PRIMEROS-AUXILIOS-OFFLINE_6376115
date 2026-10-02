@@ -344,23 +344,23 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
         </div>
       )}
 
-      {/* Controles de Asistencia por Voz y Metrónomo (Offline) */}
-      <div className="bg-stone-900 text-white p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-2.5 shadow-md">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shrink-0">
-            <Volume2 className="w-4 h-4 text-white" />
+        {/* Controles de Asistencia por Voz y Metrónomo (Offline) */}
+      <div className="bg-stone-950 text-white p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-md border border-stone-800">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shrink-0">
+            <Volume2 className="w-5 h-5 text-white" />
           </div>
           <div>
-            <div className="text-xs font-bold flex items-center gap-1.5">
+            <div className="text-sm font-black flex items-center gap-1.5">
               <span>Guía Asistida por Voz</span>
               {isSpeaking && (
-                <span className="flex h-2 w-2 relative">
+                <span className="flex h-2.5 w-2.5 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
                 </span>
               )}
             </div>
-            <div className="text-[11px] text-stone-300">
+            <div className="text-xs text-stone-300 font-medium">
               {autoAdvanceTimer !== null
                 ? `Pausa. Siguiente paso en ${autoAdvanceTimer}s...`
                 : isSpeaking
@@ -371,32 +371,32 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Botón de Lectura Continua */}
+          {/* Botón de Lectura Continua: Target táctil >= 48px */}
           {!isSpeaking ? (
             <button
               onClick={() => handleSpeakCurrentStep(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-xl text-xs font-bold transition-transform active:scale-95 shadow-sm"
+              className="min-h-[48px] flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-xl text-sm font-black transition-transform active:scale-95 shadow-sm"
               title="Iniciar lectura de todos los pasos con pausas"
             >
-              <Play className="w-3.5 h-3.5 fill-current" />
+              <Play className="w-4 h-4 fill-current" />
               <span>Lectura Continua</span>
             </button>
           ) : (
             <button
               onClick={handleStopSpeaking}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-700 hover:bg-stone-600 active:bg-stone-800 text-white rounded-xl text-xs font-bold transition-all"
+              className="min-h-[48px] flex items-center gap-2 px-4 py-2.5 bg-stone-800 hover:bg-stone-700 active:bg-stone-900 text-white rounded-xl text-sm font-black transition-all"
               title="Pausar o silenciar la voz"
             >
-              <Pause className="w-3.5 h-3.5 fill-current" />
+              <Pause className="w-4 h-4 fill-current" />
               <span>Pausar Voz</span>
             </button>
           )}
 
-          {/* Botón para solo este paso */}
+          {/* Botón para solo este paso: Target táctil >= 48px */}
           {!isSpeaking && (
             <button
               onClick={() => handleSpeakCurrentStep(false)}
-              className="px-2.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs font-semibold"
+              className="min-h-[48px] px-3.5 py-2.5 bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-700 rounded-xl text-xs font-bold"
               title="Escuchar solo el paso actual"
             >
               Solo este paso
@@ -407,33 +407,33 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
 
       {/* Metrónomo para RCP */}
       {guide.hasMetronome && (
-        <div className="bg-red-50 border border-red-200 p-3.5 rounded-2xl flex items-center justify-between gap-3">
+        <div className="bg-red-50 border-2 border-red-300 p-4 rounded-2xl flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform ${
+              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-transform ${
                 isMetronomeActive && beatPulse
                   ? 'bg-red-600 text-white scale-110 shadow-lg shadow-red-300'
-                  : 'bg-red-200 text-red-800 scale-100'
+                  : 'bg-red-200 text-red-900 scale-100'
               }`}
             >
-              <Heart className={`w-5 h-5 ${isMetronomeActive ? 'fill-current' : ''}`} />
+              <Heart className={`w-6 h-6 ${isMetronomeActive ? 'fill-current' : ''}`} />
             </div>
             <div>
-              <p className="font-extrabold text-sm text-red-950">Ritmo de Compresión (110 BPM)</p>
-              <p className="text-xs text-red-800">
+              <p className="font-black text-base text-red-950">Ritmo de Compresión (110 BPM)</p>
+              <p className="text-xs font-bold text-red-900">
                 {isMetronomeActive
-                  ? 'Sigue el bip: presiona el pecho con cada golpe sonoro.'
-                  : 'Activa el metrónomo para no perder el compás de reanimación.'}
+                  ? 'Sigue el compás: comprime el pecho con cada golpe sonoro.'
+                  : 'Activa el metrónomo para sincronizar la reanimación.'}
               </p>
             </div>
           </div>
 
           <button
             onClick={toggleMetronome}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-transform active:scale-95 ${
+            className={`min-h-[48px] px-4 py-2.5 rounded-xl text-sm font-black shrink-0 transition-transform active:scale-95 ${
               isMetronomeActive
-                ? 'bg-red-600 text-white shadow-sm ring-2 ring-red-400'
-                : 'bg-white text-red-700 border border-red-300 hover:bg-red-100'
+                ? 'bg-red-600 text-white shadow-md ring-2 ring-red-400'
+                : 'bg-white text-red-800 border-2 border-red-300 hover:bg-red-100'
             }`}
           >
             {isMetronomeActive ? 'Detener Ritmo' : 'Iniciar Ritmo'}
@@ -441,11 +441,11 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
         </div>
       )}
 
-      {/* TARJETA DEL PASO ACTUAL (Foco Principal) */}
-      <div className="bg-white rounded-3xl border-2 border-stone-200 shadow-sm overflow-hidden">
+      {/* TARJETA DEL PASO ACTUAL (Foco Principal con tamaño >= 20px) */}
+      <div className="bg-white rounded-3xl border-2 border-stone-300 shadow-sm overflow-hidden">
         {/* Barra de progreso visual de pasos */}
-        <div className="bg-stone-100 px-4 py-3 border-b border-stone-200 flex items-center justify-between">
-          <span className="text-xs font-extrabold text-stone-700 tracking-wide uppercase">
+        <div className="bg-stone-100 px-4 py-3 border-b-2 border-stone-200 flex items-center justify-between">
+          <span className="text-xs font-black text-stone-800 tracking-wider uppercase">
             Paso {currentStepIndex + 1} de {totalSteps}
           </span>
           <div className="flex gap-1.5">
@@ -456,43 +456,44 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
                   handleStopSpeaking();
                   setCurrentStepIndex(idx);
                 }}
-                className={`h-2 rounded-full transition-all ${
+                className={`h-2.5 rounded-full transition-all ${
                   idx === currentStepIndex
-                    ? 'w-7 bg-red-600'
+                    ? 'w-8 bg-red-600'
                     : idx < currentStepIndex
-                    ? 'w-3 bg-stone-400'
+                    ? 'w-3.5 bg-stone-500'
                     : 'w-3 bg-stone-300'
                 }`}
                 title={`Ir al paso ${idx + 1}`}
+                aria-label={`Paso ${idx + 1}`}
               />
             ))}
           </div>
         </div>
 
         {/* Ilustración Vectorial Adaptada */}
-        <div className="p-3 sm:p-4 bg-stone-50 border-b border-stone-100 flex items-center justify-center">
+        <div className="p-3 sm:p-4 bg-stone-50 border-b border-stone-200 flex items-center justify-center">
           <Illustration type={currentStep.illustrationType} isPanicMode={isPanicMode} />
         </div>
 
-        {/* Contenido Textual del Paso en Gran Tamaño */}
-        <div className="p-5 sm:p-6 space-y-4">
-          <h2 className="text-xl sm:text-2xl font-black text-stone-900 leading-snug">
+        {/* Contenido Textual del Paso: Título >= 24px, Instrucción >= 20px (WCAG AAA) */}
+        <div className="p-5 sm:p-7 space-y-4">
+          <h2 className="text-2xl sm:text-3xl font-black text-stone-950 leading-tight">
             {currentStep.title}
           </h2>
 
-          <p className="text-stone-800 text-base sm:text-lg font-medium leading-relaxed">
+          <p className="text-stone-950 text-xl sm:text-2xl font-bold leading-relaxed tracking-wide">
             {currentStep.instruction}
           </p>
 
           {/* Consejo Vital (Vida o Muerte) */}
           {currentStep.vitalAdvice && (
-            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="p-4 bg-amber-50 rounded-2xl border-2 border-amber-300 flex items-start gap-3">
+              <AlertCircle className="w-6 h-6 text-amber-700 shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold text-amber-900 uppercase tracking-wide">
+                <p className="text-xs font-black text-amber-900 uppercase tracking-widest">
                   Indicación Crítica
                 </p>
-                <p className="text-xs sm:text-sm font-semibold text-amber-950 mt-0.5 leading-snug">
+                <p className="text-sm sm:text-base font-extrabold text-amber-950 mt-1 leading-snug">
                   {currentStep.vitalAdvice}
                 </p>
               </div>
@@ -501,13 +502,13 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
 
           {/* Advertencia "Qué No Hacer" del paso */}
           {currentStep.warningWhatNotToDo && (
-            <div className="p-3.5 bg-red-50 rounded-2xl border border-red-200 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="p-4 bg-red-50 rounded-2xl border-2 border-red-300 flex items-start gap-3">
+              <AlertTriangle className="w-6 h-6 text-red-700 shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold text-red-900 uppercase tracking-wide">
+                <p className="text-xs font-black text-red-900 uppercase tracking-widest">
                   Peligro / Qué NO hacer
                 </p>
-                <p className="text-xs sm:text-sm font-semibold text-red-950 mt-0.5">
+                <p className="text-sm sm:text-base font-extrabold text-red-950 mt-1 leading-snug">
                   {currentStep.warningWhatNotToDo}
                 </p>
               </div>
@@ -515,32 +516,33 @@ export const GuideStepViewer: React.FC<GuideStepViewerProps> = ({
           )}
         </div>
 
-        {/* Botones de Navegación de Paso (Grandes y Ergonómicos para Pulgar) */}
-        <div className="p-4 bg-stone-50 border-t border-stone-200 grid grid-cols-2 gap-3">
+        {/* Botones de Navegación de Paso: Zonas táctiles masivas (min 56px) para pulgar */}
+        <div className="p-4 bg-stone-100 border-t-2 border-stone-200 grid grid-cols-2 gap-3">
           <button
             onClick={handlePrevStep}
             disabled={currentStepIndex === 0}
-            className={`py-3.5 px-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`min-h-[56px] py-3.5 px-4 rounded-2xl text-base font-bold flex items-center justify-center gap-2 transition-all ${
               currentStepIndex === 0
                 ? 'opacity-40 cursor-not-allowed bg-stone-200 text-stone-400'
-                : 'bg-white border border-stone-300 text-stone-800 hover:bg-stone-100 active:scale-98 shadow-xs'
+                : 'bg-white border-2 border-stone-300 text-stone-900 hover:bg-stone-50 active:scale-98 shadow-xs'
             }`}
           >
-            <ChevronLeft className="w-5 h-5" />
-            <span>Paso Anterior</span>
+            <ChevronLeft className="w-6 h-6" />
+            <span>Anterior</span>
           </button>
 
+          {/* BOTÓN PRINCIPAL DESTACADO EN LA PANTALLA: Siguiente Paso */}
           <button
             onClick={handleNextStep}
             disabled={currentStepIndex === totalSteps - 1}
-            className={`py-3.5 px-4 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-md ${
+            className={`min-h-[56px] py-3.5 px-4 rounded-2xl text-base font-black flex items-center justify-center gap-2 transition-all shadow-lg ${
               currentStepIndex === totalSteps - 1
                 ? 'bg-stone-300 text-stone-500 cursor-not-allowed shadow-none'
-                : 'bg-red-600 text-white hover:bg-red-700 active:scale-98 shadow-red-200'
+                : 'bg-red-600 hover:bg-red-700 text-white active:scale-98 shadow-red-200 ring-2 ring-red-700'
             }`}
           >
             <span>Siguiente Paso</span>
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-6 h-6 stroke-[3]" />
           </button>
         </div>
       </div>

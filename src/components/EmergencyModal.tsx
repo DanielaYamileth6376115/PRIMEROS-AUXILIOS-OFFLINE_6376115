@@ -222,50 +222,62 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
               )}
             </div>
 
-            {/* Formulario para agregar contacto nuevo */}
+            {/* Formulario para agregar contacto nuevo con etiquetas visibles permanentes */}
             {showAddForm && (
-              <form onSubmit={handleCreateContact} className="p-3 bg-stone-100 rounded-xl border border-stone-200 space-y-2.5 mb-3">
-                <p className="text-xs font-bold text-stone-800">Nuevo contacto local (ej. Centro Barrial, Médico de cabecera)</p>
+              <form onSubmit={handleCreateContact} className="p-4 bg-stone-100 rounded-2xl border-2 border-stone-300 space-y-3 mb-3">
+                <p className="text-sm font-black text-stone-900">Agregar contacto de auxilio o centro de salud</p>
                 <div>
+                  <label htmlFor="new-contact-name" className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-1">
+                    Nombre o Institución (Requerido)
+                  </label>
                   <input
+                    id="new-contact-name"
                     type="text"
-                    placeholder="Nombre (ej. Dispensario Santa Rosa)"
+                    placeholder="Ej. Dispensario Santa Rosa"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     required
-                    className="w-full text-xs px-3 py-2 bg-white rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full text-base min-h-[48px] px-3.5 py-2.5 bg-white rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500 font-medium"
                   />
                 </div>
                 <div>
+                  <label htmlFor="new-contact-phone" className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-1">
+                    Número de teléfono (Requerido)
+                  </label>
                   <input
+                    id="new-contact-phone"
                     type="tel"
-                    placeholder="Teléfono (ej. 011 4455-6677)"
+                    placeholder="Ej. 22319200 o 70112233"
                     value={newNumber}
                     onChange={(e) => setNewNumber(e.target.value)}
                     required
-                    className="w-full text-xs px-3 py-2 bg-white rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full text-base min-h-[48px] px-3.5 py-2.5 bg-white rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500 font-medium"
                   />
                 </div>
                 <div>
+                  <label htmlFor="new-contact-desc" className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-1">
+                    Detalle o Parentesco (Opcional)
+                  </label>
                   <input
+                    id="new-contact-desc"
                     type="text"
-                    placeholder="Detalle o referencia (opcional)"
+                    placeholder="Ej. Centro barrial / Vecino con auto"
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    className="w-full text-xs px-3 py-2 bg-white rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full text-base min-h-[48px] px-3.5 py-2.5 bg-white rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500 font-medium"
                   />
                 </div>
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex justify-end gap-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowAddForm(false)}
-                    className="px-3 py-1.5 text-xs font-semibold text-stone-600 hover:bg-stone-200 rounded-lg"
+                    className="min-h-[48px] px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-200 rounded-xl"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="px-3.5 py-1.5 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                    className="min-h-[48px] px-5 py-2 text-sm font-black bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-sm"
                   >
                     Guardar contacto
                   </button>
@@ -314,19 +326,19 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
           </div>
 
           {/* Notas de Ubicación del Botiquín del Hogar */}
-          <div className="p-3.5 bg-stone-100 rounded-2xl border border-stone-200/80 space-y-2">
+          <div className="p-4 bg-stone-100 rounded-2xl border-2 border-stone-300 space-y-2.5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
-                <FileText className="w-4 h-4 text-stone-600" />
+              <label htmlFor="botiquin-textarea" className="flex items-center gap-1.5 text-xs font-black text-stone-900 uppercase tracking-wider">
+                <FileText className="w-4 h-4 text-stone-700" />
                 <span>Ubicación y Notas del Botiquín</span>
-              </div>
+              </label>
               {!isEditingBotiquin ? (
                 <button
                   onClick={() => {
                     setTempBotiquinNotes(botiquinNotes);
                     setIsEditingBotiquin(true);
                   }}
-                  className="text-xs font-bold text-red-600 hover:text-red-700"
+                  className="min-h-[48px] px-3 text-xs font-black text-red-600 hover:text-red-800 flex items-center"
                 >
                   Editar nota
                 </button>
@@ -334,13 +346,13 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
                 <div className="flex gap-2">
                   <button
                     onClick={() => setIsEditingBotiquin(false)}
-                    className="text-xs text-stone-500 hover:text-stone-700"
+                    className="min-h-[48px] px-3 text-xs font-bold text-stone-600 hover:text-stone-900"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleSaveBotiquin}
-                    className="text-xs font-bold text-emerald-700 hover:text-emerald-800"
+                    className="min-h-[48px] px-4 text-xs font-black text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl"
                   >
                     Guardar
                   </button>
@@ -350,14 +362,15 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
 
             {isEditingBotiquin ? (
               <textarea
+                id="botiquin-textarea"
                 value={tempBotiquinNotes}
                 onChange={(e) => setTempBotiquinNotes(e.target.value)}
                 placeholder="Ej. Botiquín en armario alto de la cocina. Llave en repisa lateral..."
                 rows={3}
-                className="w-full text-xs p-2.5 bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full text-base p-3 bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium"
               />
             ) : (
-              <p className="text-xs text-stone-600 leading-relaxed italic">
+              <p className="text-sm text-stone-800 leading-relaxed font-medium">
                 {botiquinNotes || 'No hay notas sobre el botiquín del hogar cargadas todavía.'}
               </p>
             )}
